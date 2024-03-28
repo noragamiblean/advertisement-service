@@ -4,6 +4,7 @@ from ad_category import AdvertisementCategory
 from question import Question
 from answer import Answer
 from datetime import datetime, timedelta
+from typing import List
 
 
 class AdvertisementServiceRepository:
@@ -17,14 +18,14 @@ class AdvertisementServiceRepository:
         self.__max_user_id, self.__max_ad_id, self.__max_question_id, self.__max_answer_id = 0, 0, 0, 0
 
     # User
-    def get_users(self):
+    def get_users(self) -> List[User]:
         return self.__users
 
-    def get_user_by_id(self, id):
+    def get_user_by_id(self, id) -> User:
         for selected_user in self.__users:
             if selected_user.id == id: return selected_user
 
-    def create_user(self, username, first_name, last_name, email, phone_number, birth_date):
+    def create_user(self, username, first_name, last_name, email, phone_number, birth_date) -> User:
         self.__users.append(User(
             id=self.__max_user_id,
             username=username,
@@ -42,13 +43,12 @@ class AdvertisementServiceRepository:
         for selected_user in self.__users:
             if selected_user is user:
                 self.__users.remove(selected_user)
-                return self.__users
 
     # Advertisement
-    def get_ads(self):
+    def get_ads(self) -> List[Advertisement]:
         return self.__ads
 
-    def get_ads_by_user(self, user: User):
+    def get_ads_by_user(self, user: User) -> List[Advertisement]:
         if len(user.ads_ids) > 0:
             user_ads = []
             for id in user.ads_ids:
@@ -57,11 +57,11 @@ class AdvertisementServiceRepository:
         else :
             print(f"У пользователя {user.username} нет объявлений!")
 
-    def get_ad_by_id(self, id):
+    def get_ad_by_id(self, id) -> Advertisement:
         for ad in self.__ads:
             if ad.id == id: return ad
 
-    def create_ad(self, title, description, photo_url, category_id, validity, user: User):
+    def create_ad(self, title, description, photo_url, category_id, validity, user: User) -> Advertisement:
         current_datetime = datetime.now()
         self.__ads.append(Advertisement(
             id=self.__max_ad_id,
@@ -98,11 +98,11 @@ class AdvertisementServiceRepository:
                     self.__ads.remove(selected_ad)
 
     # Question
-    def get_question_by_id(self, id):
+    def get_question_by_id(self, id) -> Question:
         for question in self.__questions:
             if question.id == id: return question
 
-    def get_questions_by_ad(self, ad: Advertisement):
+    def get_questions_by_ad(self, ad: Advertisement) -> List[Question]:
         if len(ad.questions_ids) > 0:
             ad_questions = []
             for id in ad.questions_ids:
@@ -111,7 +111,7 @@ class AdvertisementServiceRepository:
         else:
             print(f"У объявления '{ad.title}' нет вопросов!")
 
-    def create_question(self, text, ad: Advertisement, user: User):
+    def create_question(self, text, ad: Advertisement, user: User) -> Question:
         if ad.created_by_id != user.id:
             self.__questions.append(Question(
                 id=self.__max_question_id,
@@ -135,11 +135,11 @@ class AdvertisementServiceRepository:
                     self.__questions.remove(selected_question)
 
     # Answer
-    def get_answer_by_id(self, id):
+    def get_answer_by_id(self, id) -> Answer:
         for answer in self.__answers:
             if answer.id == id: return answer
 
-    def get_answers_by_question(self, question: Question):
+    def get_answers_by_question(self, question: Question) -> List[Answer]:
         if len(question.answers_ids) > 0:
             question_answers = []
             for id in question.answers_ids:
@@ -148,7 +148,7 @@ class AdvertisementServiceRepository:
         else:
             print(f"У вопроса '{question.text}' нет ответов!")
 
-    def create_answer(self, text, question: Question, user: User):
+    def create_answer(self, text, question: Question, user: User) -> Answer:
         if question.created_by_id != user.id:
             self.__answers.append(Answer(
                 id=self.__max_answer_id,
@@ -168,3 +168,18 @@ class AdvertisementServiceRepository:
             for selected_answer in self.__answers:
                 if selected_answer is answer:
                     self.__answers.remove(selected_answer)
+    
+    # Print
+    def print_user_ads(self, user: User):
+        print(f"Пользователь:\n{user.to_print()}\n")
+        for ad_id in user.ads_ids:
+            selected_ad = self.get_ad_by_id(ad_id)
+            print(f"Объявление №{selected_ad.id}\n{selected_ad.to_print()}\n")
+            for question_id in selected_ad.questions_ids:
+                selected_question = self.get_question_by_id(question_id)
+                print(f"\tВопрос №{selected_question.id}:\n\t{selected_question.to_print()}\n")
+                for answer_id in selected_question.answers_ids:
+                    selected_answer = self.get_answer_by_id(answer_id)
+                    print(f"\t\tОтвет №{selected_answer.id}\n\t\t{selected_answer.to_print()}")
+            
+
