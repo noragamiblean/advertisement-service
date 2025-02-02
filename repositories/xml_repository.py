@@ -189,7 +189,6 @@ class XmlRepository(Repository):
         return self.get_advertisement(self.__max_ad_id - 1)
 
     def get_ad_category(self, id) -> AdvertisementCategory:
-        print(id)
         category_element = self.root.find(f".//category[@id='{id}']")
         category_object = AdvertisementCategory(
             id=id,
