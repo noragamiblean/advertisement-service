@@ -28,6 +28,12 @@ class Advertisement:
         self.is_expired = False
         self.is_redeemed = False
 
+    def __eq__(self, other):
+        if isinstance(other, Advertisement):
+            return self.id == other.id
+        else:
+            return False
+
     def to_print(self):
         return (f"Название: {self.title}"
                 f"\nОписание: {self.description}"

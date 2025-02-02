@@ -8,5 +8,11 @@ class Answer:
         self.question_id = question_id
         self.created_at = created_at
 
+    def __eq__(self, other):
+        if isinstance(other, Answer):
+            return self.id == other.id
+        else:
+            return False
+
     def to_print(self):
         return f"{self.text}\tот {self.created_at}"

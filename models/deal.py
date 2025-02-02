@@ -8,5 +8,11 @@ class Deal:
         self.text = text
         self.redeemed_at = redeemed_at
 
+    def __eq__(self, other):
+        if isinstance(other, Deal):
+            return self.ad_id == other.ad_id
+        else:
+            return False
+
     def to_print(self):
         return f"{self.text} от {self.redeemed_at} / Оценка: {self.rating}"

@@ -23,6 +23,12 @@ class User:
         self.sold = 0
         self.bought = 0
 
+    def __eq__(self, other):
+        if isinstance(other, User):
+            return self.id == other.id
+        else:
+            return False
+
     def to_print(self):
         return (f"Псевдоним: {self.username}\n{self.first_name} {self.last_name}"
                 f"\nАдрес эл. почты: {self.email}"
