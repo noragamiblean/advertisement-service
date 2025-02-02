@@ -17,7 +17,6 @@ class QuestionService:
     def ask_question(self, ad_id, user_id, text) -> Question:
         ad = self.repository.get_advertisement(ad_id)
         user = self.repository.get_user(user_id)
-
         if ad.is_expired:
             raise Exception("Вы не можете задавать вопрос под объявлением с истекшим сроком выкупа.")
         if ad.is_redeemed:

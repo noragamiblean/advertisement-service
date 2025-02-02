@@ -1,6 +1,7 @@
 from repositories.repository import Repository
 from repositories.fake_repository import FakeRepository
 from repositories.xml_repository import XmlRepository
+from repositories.sql_repository import SQLAlchemyRepository
 from models.question import Question
 from models.deal import Deal
 
@@ -28,6 +29,14 @@ class AdvertisementService:
             raise Exception("Пользователь не может выкупить свое объявление.")
         else:
             if isinstance(self.repository, FakeRepository):
+                ad.is_redeemed = True
+
+                seller.sold += 1
+                seller.rating += rating
+                seller.rating_avg = seller.rating / seller.sold
+
+                redeemer.bought += 1
+            elif isinstance(self.repository, SQLAlchemyRepository):
                 ad.is_redeemed = True
 
                 seller.sold += 1
