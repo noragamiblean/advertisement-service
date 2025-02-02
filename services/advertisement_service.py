@@ -1,4 +1,6 @@
 from repositories.repository import Repository
+from repositories.fake_repository import FakeRepository
+from repositories.xml_repository import XmlRepository
 from models.question import Question
 from models.deal import Deal
 
@@ -25,13 +27,23 @@ class AdvertisementService:
         if ad.created_by_id == redeemer.id:
             raise Exception("Пользователь не может выкупить свое объявление.")
         else:
-            ad.is_redeemed = True
+            if isinstance(self.repository, FakeRepository):
+                ad.is_redeemed = True
 
-            seller.sold += 1
-            seller.rating += rating
-            seller.rating_avg = seller.rating/seller.sold
+                seller.sold += 1
+                seller.rating += rating
+                seller.rating_avg = seller.rating / seller.sold
 
-            redeemer.bought += 1
+                redeemer.bought += 1
+            elif isinstance(self.repository, XmlRepository):
+                seller_sold = seller.sold + 1
+                seller_rating = seller.rating + rating
+                seller_rating_avg = seller_rating / seller_sold
+                redeemer_bought = redeemer.bought + 1
+                self.repository.update_user(seller.id, "sold", seller_sold)
+                self.repository.update_user(seller.id, "rating", seller_rating)
+                self.repository.update_user(seller.id, "rating_avg", seller_rating_avg)
+                self.repository.update_user(redeemer.id, "bought", redeemer_bought)
 
             return self.repository.add_deal(ad.id, redeemer.id, rating, text)
 

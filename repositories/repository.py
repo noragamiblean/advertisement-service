@@ -14,6 +14,10 @@ class Repository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def update_user(self, user_id, attrib, value):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_advertisements(self):
         raise NotImplementedError
 

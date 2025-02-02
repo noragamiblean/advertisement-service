@@ -48,6 +48,9 @@ class FakeRepository(Repository):
         self.__max_user_id += 1
         return self.__users[self.__max_user_id - 1]
 
+    def update_user(self, user_id, attrib, value):
+        pass
+
     def get_advertisements(self) -> list[Advertisement] | None:
         ads = []
         for ad in self.__ads:

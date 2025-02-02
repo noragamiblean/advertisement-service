@@ -27,7 +27,7 @@ class ShowAdvertisement:
                   f"\nНазвание: {ad.title}"
                   f"\nОписание: {ad.description}"
                   f"\nСсылка на фото: {ad.photo_url}"
-                  f"\nКатегория: {self.category_service.get_category(ad.id).title}"
+                  f"\nКатегория: {self.category_service.get_category(ad.category_id).title}"
                   f"\nСтоимость выкупа: {ad.price}")
             if ad.is_expired:
                 print(f"\nСРОК ВЫКУПА ИСТЕК")
