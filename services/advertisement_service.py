@@ -1,39 +1,36 @@
 from models.deal import Deal
-from models.question import Question
-from repositories.fake_repository import FakeRepository
+from repositories.repository import Repository
 
+class AdvertisementService:
+    def __init__(self, repository: Repository):
+        self.repository = repository
 
-def redeem_advertisement(ad_id, redeemer_id, seller_id, rating, text, repository: FakeRepository) -> Deal:
-    ad = repository.get_advertisement(ad_id)
-    redeemer = repository.get_user(redeemer_id)
-    seller = repository.get_user(seller_id)
+    def get_questions_by_ad_id(self, ad_id):
+        result = self.repository.get_questions_by_ad_id(ad_id)
+        if result is None:
+            raise Exception("Под данным объявлением отсутствуют вопросы.")
+        else:
+            return result
 
-    if ad.is_expired:
-        raise Exception("Срок выкупа объявления истек.")
-    if ad.is_redeemed:
-        raise Exception("Объявление уже выкуплено.")
-    if ad.created_by_id == redeemer.id:
-        raise Exception("Пользователь не может выкупить свое объявление.")
-    else:
-        ad.is_redeemed = True
+    def redeem_advertisement(self, ad_id, redeemer_id, seller_id, rating, text ) -> Deal:
+        ad = self.repository.get_advertisement(ad_id)
+        redeemer = self.repository.get_user(redeemer_id)
+        seller = self.repository.get_user(seller_id)
 
-        seller.sold += 1
-        seller.rating += rating
-        seller.rating_avg = seller.rating/seller.sold
+        if ad.is_expired:
+            raise Exception("Срок выкупа объявления истек.")
+        if ad.is_redeemed:
+            raise Exception("Объявление уже выкуплено.")
+        if ad.created_by_id == redeemer.id:
+            raise Exception("Пользователь не может выкупить свое объявление.")
+        else:
+            ad.is_redeemed = True
 
-        redeemer.bought += 1
+            seller.sold += 1
+            seller.rating += rating
+            seller.rating_avg = seller.rating/seller.sold
 
-        return repository.add_deal(ad.id, redeemer.id, rating, text)
+            redeemer.bought += 1
 
-def ask_question(ad_id, user_id, text, repository: FakeRepository) -> Question:
-    ad = repository.get_advertisement(ad_id)
-    user = repository.get_user(user_id)
+            return self.repository.add_deal(ad.id, redeemer.id, rating, text)
 
-    if ad.is_expired:
-        raise Exception("Вы не можете задавать вопрос под объявлением с истекшим сроком выкупа.")
-    if ad.is_redeemed:
-        raise Exception("Вы не можете задавать вопрос под выкупленным объявлением.")
-    if ad.created_by_id == user.id:
-        raise Exception("Вы не можете задавать вопрос к собственному объявлению.")
-    else:
-        return repository.add_question(text, ad.id, user.id)

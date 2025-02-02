@@ -1,11 +1,15 @@
 from repositories.fake_repository import FakeRepository
 from models.location import Location
-import services.advertisement_service as advertisement_service
-import services.question_service as question_service
-
+from services.question_service import QuestionService
+from services.user_service import UserService
+from services.advertisement_service import AdvertisementService
 
 def main():
     repository = FakeRepository()
+
+    user_service = UserService(repository)
+    ad_service = AdvertisementService(repository)
+    question_service = QuestionService(repository)
 
     repository.add_ad_category("Одежда")
     repository.add_ad_category("Техника")
@@ -66,13 +70,13 @@ def main():
         location=Location(10, 21)
     )
 
-    question1 = advertisement_service.ask_question(ad1.id, user3.id, "question text1?", repository)
-    answer1 = question_service.answer_question(question1.id, user1.id, "answer test1!", repository)
+    question1 = question_service.ask_question(ad1.id, user3.id, "question text1?")
+    answer1 = question_service.answer_question(question1.id, user1.id, "answer test1!")
 
-    advertisement_service.redeem_advertisement(ad1.id, user2.id, user1.id, 5, "text1", repository)
-    advertisement_service.redeem_advertisement(ad2.id, user2.id, user1.id, 4, "text2", repository)
+    ad_service.redeem_advertisement(ad1.id, user2.id, user1.id, 5, "text1")
+    ad_service.redeem_advertisement(ad2.id, user2.id, user1.id, 4, "text2")
 
-    user_test = repository.get_user(0)
+    print(repository.get_advertisements_by_user(0))
 
 
 if __name__ == '__main__':

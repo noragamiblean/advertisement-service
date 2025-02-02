@@ -16,13 +16,19 @@ class FakeRepository(Repository):
         self.__questions: list[Question] = []
         self.__answers: list[Answer] = []
         self.__categories: list[AdvertisementCategory] = []
-        self.deals: list[Deal] = []
+        self.__deals: list[Deal] = []
         (self.__max_user_id,
          self.__max_ad_id,
          self.__max_category_id,
          self.__max_question_id,
          self.__max_answer_id,
          self.__max_deal_id) = 0, 0, 0, 0, 0, 0
+
+    def get_users(self) -> list[User] | None:
+        users = []
+        for user in self.__users:
+            users.append(user)
+        return users
 
     def get_user(self, id) -> User | None:
         for selected_user in self.__users:
@@ -42,9 +48,22 @@ class FakeRepository(Repository):
         self.__max_user_id += 1
         return self.__users[self.__max_user_id - 1]
 
+    def get_advertisements(self) -> list[Advertisement] | None:
+        ads = []
+        for ad in self.__ads:
+            ads.append(ad)
+        return ads
+
     def get_advertisement(self, id) -> Advertisement | None:
         for ad in self.__ads:
             if ad.id == id: return ad
+
+    def get_advertisements_by_user_id(self, user_id) -> list[Advertisement] | None:
+        ads = []
+        for ad in self.__ads:
+            if ad.created_by_id == user_id:
+                ads.append(ad)
+        return ads
 
     def add_advertisement(self, title, description, photo_url, category_id, price, validity, user_id, location: Location) -> Advertisement:
         if price < 0:
@@ -85,6 +104,13 @@ class FakeRepository(Repository):
         for question in self.__questions:
             if question.id == id: return question
 
+    def get_questions_by_ad_id(self, ad_id) -> list[Question] | None:
+        questions = []
+        for question in self.__questions:
+            if question.advertisement_id == ad_id:
+                questions.append(question)
+        return questions
+
     def add_question(self, text, ad_id, user_id) -> Question:
             self.__questions.append(Question(
                 id=self.__max_question_id,
@@ -101,6 +127,13 @@ class FakeRepository(Repository):
         for answer in self.__answers:
             if answer.id == id: return answer
 
+    def get_answers_by_question_id(self, question_id) -> list[Answer] | None:
+        answers = []
+        for answer in self.__answers:
+            if answer.question_id == question_id:
+                answers.append(answer)
+        return answers
+
     def add_answer(self, text, question_id, user_id) -> Answer:
             self.__answers.append(Answer(
                 id=self.__max_answer_id,
@@ -114,11 +147,15 @@ class FakeRepository(Repository):
             return new_answer
 
     def get_deal(self, ad_id) -> Deal | None:
-        for deal in self.deals:
+        for deal in self.__deals:
+            if deal.ad_id == ad_id: return deal
+
+    def get_deal_by_ad_id(self, ad_id) -> Deal | None:
+        for deal in self.__deals:
             if deal.ad_id == ad_id: return deal
 
     def add_deal(self, ad_id, redeemer_id, rating, text) -> Deal:
-        self.deals.append(Deal(
+        self.__deals.append(Deal(
             ad_id=ad_id,
             redeemer_id=redeemer_id,
             rating=rating,
@@ -126,5 +163,5 @@ class FakeRepository(Repository):
             redeemed_at=datetime.now()
         ))
         self.__max_deal_id += 1
-        new_deal = self.deals[self.__max_deal_id - 1]
+        new_deal = self.__deals[self.__max_deal_id - 1]
         return new_deal
