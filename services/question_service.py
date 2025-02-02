@@ -1,13 +1,13 @@
+from repositories.repository import Repository
 from models.question import Question
 from models.answer import Answer
-from repositories.repository import Repository
 
 
 class QuestionService:
     def __init__(self, repository: Repository):
         self.repository = repository
 
-    def get_answers_by_question_id(self, question_id):
+    def get_answers_by_question_id(self, question_id) -> list[Answer] | None:
         result = self.repository.get_answers_by_question_id(question_id)
         if result is None:
             raise Exception("Под данным вопросом отсутсвуют ответы.")

@@ -1,11 +1,12 @@
-from models.deal import Deal
 from repositories.repository import Repository
+from models.question import Question
+from models.deal import Deal
 
 class AdvertisementService:
     def __init__(self, repository: Repository):
         self.repository = repository
 
-    def get_questions_by_ad_id(self, ad_id):
+    def get_questions_by_ad_id(self, ad_id) -> list[Question] | None:
         result = self.repository.get_questions_by_ad_id(ad_id)
         if result is None:
             raise Exception("Под данным объявлением отсутствуют вопросы.")

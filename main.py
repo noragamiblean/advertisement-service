@@ -3,6 +3,8 @@ from models.location import Location
 from services.question_service import QuestionService
 from services.user_service import UserService
 from services.advertisement_service import AdvertisementService
+from services.category_service import AdvertisementCategoryService
+from usecase.show_advertisement import ShowAdvertisement
 
 def main():
     repository = FakeRepository()
@@ -10,6 +12,9 @@ def main():
     user_service = UserService(repository)
     ad_service = AdvertisementService(repository)
     question_service = QuestionService(repository)
+    category_service = AdvertisementCategoryService(repository)
+
+    show_ad = ShowAdvertisement(user_service, ad_service, question_service, category_service)
 
     repository.add_ad_category("Одежда")
     repository.add_ad_category("Техника")
@@ -71,12 +76,15 @@ def main():
     )
 
     question1 = question_service.ask_question(ad1.id, user3.id, "question text1?")
+    question2 = question_service.ask_question(ad1.id, user3.id, "question text2?")
+    question3 = question_service.ask_question(ad1.id, user3.id, "question text3?")
     answer1 = question_service.answer_question(question1.id, user1.id, "answer test1!")
+    answer2 = question_service.answer_question(question3.id, user1.id, "answer test2!")
 
     ad_service.redeem_advertisement(ad1.id, user2.id, user1.id, 5, "text1")
     ad_service.redeem_advertisement(ad2.id, user2.id, user1.id, 4, "text2")
 
-    print(repository.get_advertisements_by_user(0))
+    show_ad.show_all_ads_by_user_id(0)
 
 
 if __name__ == '__main__':
